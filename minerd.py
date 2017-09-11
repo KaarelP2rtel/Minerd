@@ -68,8 +68,7 @@ def connected():
 def log(a):
     print a
     data.history.append((str(time.strftime('%D  %H:%M:%S')+"   "+a[5:10]+" "+a[15:])))
-    
-    
+        
 def main():    
     while True:
         if connected():
@@ -83,10 +82,10 @@ def main():
                 target=maxp
             if target>current:
                 log(bot+"Setting price to "+str(target))
-                log(api+str(setPrice(target)))
+                log(str(api+str(setPrice(target))))
             elif target < current:
                 log(bot+"Lowering Price")
-                log(api+str(lowerPrice()))
+                log(str(api+str(lowerPrice())))
             else:
                 log(bot+"Getting tea")
             time.sleep(60)
