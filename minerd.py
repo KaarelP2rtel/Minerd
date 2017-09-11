@@ -29,7 +29,7 @@ def targetPrice():
 		if order["alive"] and order["workers"]!=0:	
 			prices.append(order["price"])
 			num+=1
-	return(prices[int(0.95*num)])
+	return(prices[int(0.9*num)])
 def maxPrice():
     api = requests.get("http://whattomine.com/coins.json")
     priceData = api.json()
