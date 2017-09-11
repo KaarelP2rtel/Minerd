@@ -101,14 +101,17 @@ def shutdown():
 
 @app.route("/", methods=["GET"])
 def hello():
-    return "Hello"
-	
+    if botThread.isAlive():
+        return("Olen elus :)")
+    else:
+        return("Olen surnud :(")
 	
 	
 if __name__ == "__main__":
     print("Starting web server")
-    #threading.Thread(target=app.run, args=("0.0.0.0",80)).start()
+    threading.Thread(target=app.run, args=("0.0.0.0",80)).start()
     print("Web server started")
     print("Starting bot")
-    threading.Thread(target=main).start()
+    botThread=threading.Thread(target=main)
+    botThread.start()
     print("Bot started")
