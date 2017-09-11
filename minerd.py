@@ -11,12 +11,14 @@ file = open("conf", "r")
 apiID = file.readline()[:-1]
 apiKey = file.readline()[:-1]
 file.close()
-orderID=""
 bot=colored("[BOT] ","green")
 botr=colored("[BOT] ","red")
+botl="[BOT]"
 api=colored("[API] ","yellow")
+apil="[API]"
 class Data():
     orderID=""
+    history=[]
 data=Data()
 def targetPrice():
 	ordersApi=requests.get("https://api.nicehash.com/api?method=orders.get&location=0&algo=24")
@@ -63,7 +65,11 @@ def connected():
         return True
     except:
         return False        
-
+def log(a):
+    print a
+    data.history.append((str(time.strftime('%D  %H:%M:%S')+"   "+a[5:10]+" "+a[15:])))
+    
+    
 def main():    
     while True:
         if connected():
@@ -71,21 +77,21 @@ def main():
             current=float(currentPrice())
             maxp=float(rund(maxPrice()))
             con="Current: "+str(current)+" Target: "+str(target)+" Max: "+str(maxp)
-            print(bot+con)
+            log(bot+con)
             if maxp<target:
-                print(bot+"Setting target to "+str(maxp))
+                log(bot+"Setting target to "+str(maxp))
                 target=maxp
             if target>current:
-                print(bot+"Setting price to "+str(target))
-                print(api+str(setPrice(target)))
+                log(bot+"Setting price to "+str(target))
+                log(api+str(setPrice(target)))
             elif target < current:
-                print(bot+"Lowering Price")
-                print(api+str(lowerPrice()))
+                log(bot+"Lowering Price")
+                log(api+str(lowerPrice()))
             else:
-                print(bot+"Getting tea")
+                log(bot+"Getting tea")
             time.sleep(60)
         else:
-            print(botr+"No connection trying again in 30 seconds")
+            log(botr+"No connection trying again in 30 seconds")
             time.sleep(30)
 
 
@@ -101,11 +107,17 @@ def shutdown():
 
 @app.route("/", methods=["GET"])
 def hello():
+    ret=""
     if botThread.isAlive():
-        return("Olen elus :)")
+        ret+="Olen elus :D"
     else:
-        return("Olen surnud :(")
-	
+        ret+="Olen surnud D:"
+    ret+="<ul>"
+    for i in data.history:
+        ret+="<li>"+i+"</li>"
+    ret+="</ul>"
+    return ret
+        
 	
 if __name__ == "__main__":
     print("Starting web server")
