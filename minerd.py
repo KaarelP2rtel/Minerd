@@ -82,10 +82,12 @@ def main():
                 target=maxp
             if target>current:
                 log(bot+"Setting price to "+str(target))
-                log(str(api+str(setPrice(target))))
+                a=str(api+str(setPrice(target)))
+                log(a)
             elif target < current:
                 log(bot+"Lowering Price")
-                log(str(api+str(lowerPrice())))
+                a=str(api+str(lowerPrice()))
+                log(a)
             else:
                 log(bot+"Getting tea")
             time.sleep(60)
