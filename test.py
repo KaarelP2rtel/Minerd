@@ -1,1 +1,10 @@
-print(str(0.6800)>0.700)
+
+
+def do():
+	while True:
+		try:
+			ret()
+		except:
+			print ("lol")
+
+print(do())

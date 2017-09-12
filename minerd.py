@@ -15,10 +15,14 @@ bot=colored("[BOT] ","green")
 botr=colored("[BOT] ","red")
 botl="[BOT]"
 api=colored("[API] ","yellow")
+apir=colored("[API] ","red")
 apil="[API]"
 class Data():
     orderID=""
     history=[]
+    currentSum=0
+    maximumSum=0
+    
 data=Data()
 def targetPrice():
 	ordersApi=requests.get("https://api.nicehash.com/api?method=orders.get&location=0&algo=24")
@@ -29,39 +33,59 @@ def targetPrice():
 		if order["alive"] and order["workers"]!=0:	
 			prices.append(order["price"])
 			num+=1
-	return(prices[int(0.9*num)])
+	return(prices[int(0.95*num)])
 def maxPrice():
-    api = requests.get("http://whattomine.com/coins.json")
-    priceData = api.json()
-    mHashR = float(priceData['coins']["Zcash"]["nethash"])/1000000
-    xRate = float(priceData['coins']["Zcash"]["exchange_rate"])
-    return(576*(1/mHashR)*10*xRate)
+        while True:
+            try:
+                api = requests.get("http://whattomine.com/coins.json")
+                priceData = api.json()
+                mHashR = float(priceData['coins']["Zcash"]["nethash"])/1000000
+                xRate = float(priceData['coins']["Zcash"]["exchange_rate"])
+                return(576*(1/mHashR)*10*xRate)
+            except:
+                print(apir+"Failed to get Max Price. Trying again")
+                time.sleep(5)
 def currentPrice():
-    myApi=requests.get("https://api.nicehash.com/api?method=orders.get&my&id="+apiID+"&key="+apiKey+"&location=0&algo=24")
-    data.orderID=myApi.json()["result"]["orders"][0]["id"]
-    return(myApi.json()["result"]["orders"][0]["price"])	
+   while True:
+        try:
+            myApi=requests.get("https://api.nicehash.com/api?method=orders.get&my&id="+apiID+"&key="+apiKey+"&location=0&algo=24")
+            data.orderID=myApi.json()["result"]["orders"][0]["id"]
+            return(myApi.json()["result"]["orders"][0]["price"])	
+        except:
+            print(apir+"Failed to get Current Price. Trying again")
+            time.sleep(5)
 def lowerPrice():
-    decrease=requests.get("https://api.nicehash.com/api?method=orders.set.price.decrease&id="+apiID+"&key="+apiKey+"&location=0&algo=24&order="+str(data.orderID))
-    try:
-        lamp=decrease.json()["result"]["success"]
-        ret="success"
-    except:
-        ret=decrease.json()["result"]["error"]
-	return ret
+    while True:
+        try:
+            decrease=requests.get("https://api.nicehash.com/api?method=orders.set.price.decrease&id="+apiID+"&key="+apiKey+"&location=0&algo=24&order="+str(data.orderID))
+            try:
+                lamp=decrease.json()["result"]["success"]
+                ret="success"
+            except:
+                ret=decrease.json()["result"]["error"]
+            return ret
+        except:
+            print(apir+"Failed to Lower Price. Trying again")
+            time.sleep(5)
 def setPrice(inp):
-    setPrice=requests.get("https://api.nicehash.com/api?method=orders.set.price&id="+apiID+"&key="+apiKey+"&location=0&algo=24&order="+str(data.orderID)+"&price="+str(inp)).json()
-    try:
-        lamp=setPrice["result"]
-        ret="Sucess"
-    except:
-        ret=setPrice["result"]["error"]
-	return ret
+    while True:
+        try:
+            setPrice=requests.get("https://api.nicehash.com/api?method=orders.set.price&id="+apiID+"&key="+apiKey+"&location=0&algo=24&order="+str(data.orderID)+"&price="+str(inp)).json()
+            try:
+                lamp=setPrice["result"]
+                ret="Sucess"
+            except:
+                ret=setPrice["result"]["error"]
+            return ret
+        except:
+            print(apir+"Failed to Set Price. Trying again")
+            time.sleep(5)
 
 def rund(inp):
     return float(str(inp)[:6])
 def connected():
     try:
-        requests.get("http://www.neti.ee/")
+        requests.get("http://www.google.ee/")
         return True
     except:
         return False        
@@ -75,7 +99,10 @@ def main():
             target=float(targetPrice())
             current=float(currentPrice())
             maxp=float(rund(maxPrice()))
-            con="Current: "+str(current)+" Target: "+str(target)+" Max: "+str(maxp)
+            data.currentSum+=current
+            data.maximumSum+=maxp
+            ratio=rund(data.currentSum/maximumSum)
+            con="Current: "+str(current)+" Target: "+str(target)+" Max: "+str(maxp)+" Ratio: "+str(ratio)
             log(bot+con)
             if maxp<target:
                 log(bot+"Setting target to "+str(maxp))
