@@ -24,16 +24,25 @@ class Data():
     maximumSum=0
     
 data=Data()
+def log(a):
+    print a
+    data.history.append((str(time.strftime('%D  %H:%M:%S')+"   "+a[5:10]+" "+a[15:])))
 def targetPrice():
-	ordersApi=requests.get("https://api.nicehash.com/api?method=orders.get&location=0&algo=24")
-	orders=ordersApi.json()["result"]["orders"]
-	prices=[]
-	num=0
-	for order in orders:
-		if order["alive"] and order["workers"]!=0:	
-			prices.append(order["price"])
-			num+=1
-	return(prices[int(0.95*num)])
+    while True:
+        try:
+            ordersApi=requests.get("https://api.nicehash.com/api?method=orders.get&location=0&algo=24")
+            orders=ordersApi.json()["result"]["orders"]
+            prices=[]
+            num=0
+            for order in orders:
+                if order["alive"] and order["workers"]!=0:	
+                    prices.append(order["price"])
+                    num+=1
+            return(prices[int(0.95*num)])
+        except:
+            log(apir+"Failed to get Target Price. Trying again")
+            time.sleep(5)
+            
 def maxPrice():
         while True:
             try:
@@ -43,7 +52,7 @@ def maxPrice():
                 xRate = float(priceData['coins']["Zcash"]["exchange_rate"])
                 return(576*(1/mHashR)*10*xRate)
             except:
-                print(apir+"Failed to get Max Price. Trying again")
+                log(apir+"Failed to get Max Price. Trying again")
                 time.sleep(5)
 def currentPrice():
    while True:
@@ -52,7 +61,7 @@ def currentPrice():
             data.orderID=myApi.json()["result"]["orders"][0]["id"]
             return(myApi.json()["result"]["orders"][0]["price"])	
         except:
-            print(apir+"Failed to get Current Price. Trying again")
+            log(apir+"Failed to get Current Price. Trying again")
             time.sleep(5)
 def lowerPrice():
     while True:
@@ -65,7 +74,7 @@ def lowerPrice():
                 ret=decrease.json()["result"]["error"]
             return ret
         except:
-            print(apir+"Failed to Lower Price. Trying again")
+            log(apir+"Failed to Lower Price. Trying again")
             time.sleep(5)
 def setPrice(inp):
     while True:
@@ -78,7 +87,7 @@ def setPrice(inp):
                 ret=setPrice["result"]["error"]
             return ret
         except:
-            print(apir+"Failed to Set Price. Trying again")
+            log(apir+"Failed to Set Price. Trying again")
             time.sleep(5)
 
 def rund(inp):
@@ -89,9 +98,7 @@ def connected():
         return True
     except:
         return False        
-def log(a):
-    print a
-    data.history.append((str(time.strftime('%D  %H:%M:%S')+"   "+a[5:10]+" "+a[15:])))
+
         
 def main():    
     while True:
