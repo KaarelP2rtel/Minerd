@@ -108,7 +108,7 @@ def main():
             maxp=float(rund(maxPrice()))
             data.currentSum+=current
             data.maximumSum+=maxp
-            ratio=rund(data.currentSum/maximumSum)
+            ratio=rund(data.currentSum/data.maximumSum)
             con="Current: "+str(current)+" Target: "+str(target)+" Max: "+str(maxp)+" Ratio: "+str(ratio)
             log(bot+con)
             if maxp<target:
