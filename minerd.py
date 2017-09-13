@@ -36,7 +36,7 @@ def avg(a):
     summ=0
     count=0
     for i in a:
-        summ+=float(i)
+        summ+=i
         count+=1
     return summ/count
 
@@ -52,12 +52,13 @@ def targetPrice():
                 if order["alive"] and order["workers"] != 0:
                     prices.append(order["price"])
                     num += 1
-            target=prices[int(0.95*num)]
+            target=float(prices[int(0.95*num)])
             data.slidingTarget.append(target)
             if (len(data.slidingTarget) >= 60):
                 data.slidingTarget.remove(data.slidingTarget[0])
             average=avg(data.slidingTarget)
             if target>average:
+                print(bot+"Price is rising, targeting average.")
                 return average
             else:
                 return target
