@@ -20,6 +20,7 @@ apil = "[API]"
 class Data():
     orderID = ""
     history = []
+    slidingTarget = []
     currentSum = 0
     maximumSum = 0
 
@@ -31,6 +32,15 @@ def log(a):
     data.history.append((str(time.strftime('%D  %H:%M:%S')+"   "+a[5:10]+" "+a[15:])))
 
 
+def avg(a):
+    summ=0
+    count=0
+    for i in a:
+        summ+=float(i)
+        count+=1
+    return summ/count
+
+    
 def targetPrice():
     while True:
         try:
@@ -42,7 +52,17 @@ def targetPrice():
                 if order["alive"] and order["workers"] != 0:
                     prices.append(order["price"])
                     num += 1
-            return(prices[int(0.95*num)])
+            target=prices[int(0.95*num)]
+            data.slidingTarget.append(target)
+            if (len(data.slidingTarget) >= 60):
+                data.slidingTarget.remove(data.slidingTarget[0])
+            average=avg(data.slidingTarget)
+            if target>average:
+                return average
+            else:
+                return target
+                
+            
         except:
             log(apir+"Failed to get Target Price. Trying again")
             time.sleep(5)
@@ -172,10 +192,10 @@ def hello():
 
 
 if __name__ == "__main__":
-    print("Starting web server")
-    threading.Thread(target=app.run, args=("0.0.0.0", 80)).start()
-    print("Web server started")
     print("Starting bot")
     botThread = threading.Thread(target=main)
     botThread.start()
     print("Bot started")
+    print("Starting web server")
+    threading.Thread(target=app.run, args=("0.0.0.0", 80)).start()
+    print("Web server started")
