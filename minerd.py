@@ -138,7 +138,7 @@ def connected():
 def main():
     while True:
         if connected():
-            target = float(targetPrice())
+            target = rund(float(targetPrice()))
             current = float(currentPrice())
             maxp = float(rund(maxPrice()))
             data.currentSum += current
