@@ -198,6 +198,10 @@ def hello():
         ret += "Olen elus :D"
     else:
         ret += "Olen surnud D:"
+    ret+="</br>"
+    if(page!=last):
+        ret+="<a href=\"/1\"> Jargmine </a>"
+        ret+="<a href=\"/"+str(last)+"\">Viimane</a>"
     ret += "<ul>"
     for i in range(100):
         try:
@@ -217,10 +221,16 @@ def hello():
 def page(page):
     last=getLast()
     ret = ""
+    
     if botThread.isAlive():
         ret += "Olen elus :D"
     else:
         ret += "Olen surnud D:"
+    ret+="</br>"
+    ret+="<a href=\"/"+str(page-1)+"\">Eelmine</a>"
+    if(page!=last):
+        ret+="<a href=\"/"+str(page+1)+"\"> Jargmine </a>"
+        ret+="<a href=\"/"+str(page+1)+"\">Viimane</a>"
     ret += "<ul>"
     for i in range(100):
         try:
