@@ -122,6 +122,14 @@ def setPrice(inp):
             log(apir+"Failed to Set Price. Trying again")
             time.sleep(5)
 
+def currentSpeed():
+    while True:
+        try:
+            myApi = requests.get("https://api.nicehash.com/api?method=orders.get&my&id="+apiID+"&key="+apiKey+"&location=0&algo=24")
+            return(myApi.json()["result"]["orders"][0]["accepted_speed"])
+        except:
+            log(apir+"Failed to get Current Speed. Trying again")
+            time.sleep(5)
 
 def rund(inp):
     return float(str(inp)[:6])
@@ -138,13 +146,14 @@ def connected():
 def main():
     while True:
         if connected():
+            speed=float(currentSpeed())*10000000
             target = rund(float(targetPrice()))
             current = float(currentPrice())
             maxp = float(rund(maxPrice()))
-            data.currentSum += current
-            data.maximumSum += maxp
+            data.currentSum += speed*current
+            data.maximumSum += speed*maxp
             ratio = rund(data.currentSum/data.maximumSum)
-            con = "Current: "+str(current)+" Target: "+str(target)+" Max: "+str(maxp)+" Ratio: "+str(ratio)
+            con = "Current: "+str(current)+" Target: "+str(target)+" Max: "+str(maxp)+" Speed "+str(speed)+" Ratio: "+str(ratio)
             log(bot+con)
             if maxp < target:
                 log(bot+"Setting target to "+str(maxp))
@@ -164,7 +173,6 @@ def main():
             log(botr+"No connection trying again in 30 seconds")
             time.sleep(30)
 
-
 def shutdown_server():
     func = request.environ.get('werkzeug.server.shutdown')
     if func is None:
@@ -177,19 +185,56 @@ def shutdown():
     shutdown_server()
     return 'Server shutting down...'
 
-
+def getLast():
+    return len(data.history)/200
+    
+@app.route("/0", methods=["GET"])
 @app.route("/", methods=["GET"])
 def hello():
+    page=0
+    last =getLast()
     ret = ""
     if botThread.isAlive():
         ret += "Olen elus :D"
     else:
         ret += "Olen surnud D:"
     ret += "<ul>"
-    for i in data.history:
-        ret += "<li>"+i+"</li>"
+    for i in range(100):
+        try:
+            ret += "<li>"+data.history[i]+"</li>"
+        except:
+            pass
     ret += "</ul>"
+    if(page!=last):
+        ret+="<a href=\"/1\"> Jargmine </a>"
+        ret+="<a href=\"/"+str(last)+"\">Viimane</a>"
+    
+    
     return ret
+   
+
+@app.route("/<int:page>", methods=["GET"])
+def page(page):
+    last=getLast()
+    ret = ""
+    if botThread.isAlive():
+        ret += "Olen elus :D"
+    else:
+        ret += "Olen surnud D:"
+    ret += "<ul>"
+    for i in range(100):
+        try:
+            ret += "<li>"+data.history[page*100+i]+"</li>"
+        except:
+            pass
+    ret += "</ul>"
+    ret+="<a href=\"/"+str(page-1)+"\">Eelmine</a>"
+    if(page!=last):
+        ret+="<a href=\"/"+str(page+1)+"\"> Jargmine </a>"
+        ret+="<a href=\"/"+str(page+1)+"\">Viimane</a>"
+    return ret
+    
+    
 
 
 if __name__ == "__main__":
@@ -198,5 +243,6 @@ if __name__ == "__main__":
     botThread.start()
     print("Bot started")
     print("Starting web server")
-    threading.Thread(target=app.run, args=("0.0.0.0", 80)).start()
+    webThread=threading.Thread(target=app.run, args=("0.0.0.0", 80))
+    webThread.start()
     print("Web server started")
