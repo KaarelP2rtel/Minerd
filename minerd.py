@@ -186,7 +186,7 @@ def shutdown():
     return 'Server shutting down...'
 
 def getLast():
-    return len(data.history)/200
+    return (len(data.history)*100)+1
     
 @app.route("/0", methods=["GET"])
 @app.route("/", methods=["GET"])
