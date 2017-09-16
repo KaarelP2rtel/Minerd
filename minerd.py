@@ -243,6 +243,6 @@ if __name__ == "__main__":
     botThread.start()
     print("Bot started")
     print("Starting web server")
-    webThread=threading.Thread(target=app.run, args=("0.0.0.0", 80))
+    webThread=threading.Thread(target=app.run, args=("0.0.0.0", 4000))
     webThread.start()
     print("Web server started")
