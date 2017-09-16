@@ -52,7 +52,7 @@ def targetPrice():
                 if order["alive"] and order["workers"] != 0:
                     prices.append(order["price"])
                     num += 1
-            target=float(prices[int(0.95*num)])
+            target=float(prices[int(0.9*num)])
             data.slidingTarget.append(target)
             if (len(data.slidingTarget) >= 60):
                 data.slidingTarget.remove(data.slidingTarget[0])
