@@ -4,7 +4,7 @@
 apiID="122647"
 
 #API Key
-key="42428ee2-6033-414f-8a14-a272f9f14266"
+apiKey="42428ee2-6033-414f-8a14-a272f9f14266"
 
 #Agressivness - 0-100
 aggr=90

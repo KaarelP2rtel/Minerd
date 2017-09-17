@@ -7,18 +7,10 @@ import config
 
 app = Flask(__name__)
 
-apiID = config.apiID
-apiKey = config.apiKey
-aggr=config.aggr
-smooth=config.smooth
-
-
 bot = colored("[BOT] ", "green")
 botr = colored("[BOT] ", "red")
-botl = "[BOT]"
 api = colored("[API] ", "yellow")
 apir = colored("[API] ", "red")
-apil = "[API]"
 
 
 class Data():
@@ -38,21 +30,7 @@ def log(a):
 
 def reloadConf():
     reload(config)
-    changes=False
-    if(apiID!=config.apiID):
-        changes=True
-    if(apiKey!=config.apiKey):
-        changes=True
-    if(aggr!=config.aggr):
-        changes=True
-    if(smooth!=config.smooth):
-        changes=True
-    if(changes):
-        log(bot+"Changes found in config file")
-    apiID = config.apiID
-    apiKey = config.apiKey
-    aggr=config.aggr
-    smooth=config.smooth
+    log(bot+"Config reloaded")
     return
 
 def avg(a):
@@ -75,9 +53,9 @@ def targetPrice():
                 if order["alive"] and order["workers"] != 0:
                     prices.append(order["price"])
                     num += 1
-            target=float(prices[int(((float(aggr)/100)*num)])
+            target=float((float(config.aggr)/100)*num)
             data.slidingTarget.append(target)
-            if (len(data.slidingzTarget) >= smooth):
+            if (len(data.slidingTarget) >= config.smooth):
                 data.slidingTarget.remove(data.slidingTarget[0])
             average=avg(data.slidingTarget)
             if target>average:
@@ -108,7 +86,7 @@ def maxPrice():
 def currentPrice():
     while True:
         try:
-            myApi = requests.get("https://api.nicehash.com/api?method=orders.get&my&id="+apiID+"&key="+apiKey+"&location=0&algo=24")
+            myApi = requests.get("https://api.nicehash.com/api?method=orders.get&my&id="+config.apiID+"&key="+config.apiKey+"&location=0&algo=24")
             data.orderID = myApi.json()["result"]["orders"][0]["id"]
             return(myApi.json()["result"]["orders"][0]["price"])
         except:
@@ -119,7 +97,7 @@ def currentPrice():
 def lowerPrice():
     while True:
         try:
-            decrease = requests.get("https://api.nicehash.com/api?method=orders.set.price.decrease&id="+apiID+"&key="+apiKey+"&location=0&algo=24&order="+str(data.orderID))
+            decrease = requests.get("https://api.nicehash.com/api?method=orders.set.price.decrease&id="+config.apiID+"&key="+config.apiKey+"&location=0&algo=24&order="+str(data.orderID))
             try:
                 lamp = decrease.json()["result"]["success"]
                 ret = "success"
@@ -134,7 +112,7 @@ def lowerPrice():
 def setPrice(inp):
     while True:
         try:
-            setPrice = requests.get("https://api.nicehash.com/api?method=orders.set.price&id="+apiID+"&key="+apiKey+"&location=0&algo=24&order="+str(data.orderID)+"&price="+str(inp)).json()
+            setPrice = requests.get("https://api.nicehash.com/api?method=orders.set.price&id="+config.apiID+"&key="+config.apiKey+"&location=0&algo=24&order="+str(data.orderID)+"&price="+str(inp)).json()
             try:
                 lamp = setPrice["result"]
                 ret = "Sucess"
@@ -145,14 +123,16 @@ def setPrice(inp):
             log(apir+"Failed to Set Price. Trying again")
             time.sleep(5)
 
+
 def currentSpeed():
     while True:
         try:
-            myApi = requests.get("https://api.nicehash.com/api?method=orders.get&my&id="+apiID+"&key="+apiKey+"&location=0&algo=24")
+            myApi = requests.get("https://api.nicehash.com/api?method=orders.get&my&id="+config.apiID+"&key="+config.apiKey+"&location=0&algo=24")
             return(myApi.json()["result"]["orders"][0]["accepted_speed"])
         except:
             log(apir+"Failed to get Current Speed. Trying again")
             time.sleep(5)
+
 
 def rund(inp):
     return float(str(inp)[:6])
@@ -163,7 +143,11 @@ def connected():
         requests.get("http://www.google.ee/")
         return True
     except:
-        return False
+        try:
+            requests.get("http://www.neti.ee")
+            return True
+        except:
+            return False
 
 
 def main():
@@ -198,6 +182,10 @@ def main():
             log(botr+"No connection trying again in 30 seconds")
             time.sleep(30)
 
+def getLast():
+    return (len(data.history)/100)
+
+
 def shutdown_server():
     func = request.environ.get('werkzeug.server.shutdown')
     if func is None:
@@ -210,9 +198,7 @@ def shutdown():
     shutdown_server()
     return 'Server shutting down...'
 
-def getLast():
-    return (len(data.history)/100)
-    
+
 @app.route("/0", methods=["GET"])
 @app.route("/", methods=["GET"])
 def hello():
@@ -246,7 +232,6 @@ def hello():
 def page(page):
     last=getLast()
     ret = ""
-    
     if botThread.isAlive():
         ret += "Olen elus :D"
     else:
@@ -255,7 +240,7 @@ def page(page):
     ret+="<a href=\"/"+str(page-1)+"\">Eelmine</a>"
     if(page!=last):
         ret+="<a href=\"/"+str(page+1)+"\"> Jargmine </a>"
-        ret+="<a href=\"/"+str(page+1)+"\">Viimane</a>"
+        ret+="<a href=\"/"+str(last)+"\">Viimane</a>"
     ret += "<ul>"
     for i in range(100):
         try:
@@ -269,8 +254,8 @@ def page(page):
         ret+="<a href=\"/"+str(page+1)+"\"> Jargmine </a>"
         ret+="<a href=\"/"+str(page+1)+"\">Viimane</a>"
     return ret
-    
-    
+
+
 
 
 if __name__ == "__main__":
