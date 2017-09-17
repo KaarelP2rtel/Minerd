@@ -21,8 +21,8 @@ class Data():
     orderID = ""
     history = []
     slidingTarget = []
-    currentSum = 0
-    maximumSum = 0
+    currentSum = 0.001
+    maximumSum = 0.001
 
 data = Data()
 
@@ -186,7 +186,7 @@ def shutdown():
     return 'Server shutting down...'
 
 def getLast():
-    return (len(data.history)*100)+1
+    return (len(data.history)/100)
     
 @app.route("/0", methods=["GET"])
 @app.route("/", methods=["GET"])
