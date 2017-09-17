@@ -20,9 +20,6 @@ api = colored("[API] ", "yellow")
 apir = colored("[API] ", "red")
 apil = "[API]"
 
-def reloadConf():
-    config = reload(config)
-    return
 
 class Data():
     orderID = ""
@@ -38,6 +35,25 @@ def log(a):
     print a
     data.history.append((str(time.strftime('%D  %H:%M:%S')+"   "+a[5:10]+" "+a[15:])))
 
+
+def reloadConf():
+    reload(config)
+    changes=False
+    if(apiID!=config.apiID):
+        changes=True
+    if(apiKey!=config.apiKey):
+        changes=True
+    if(aggr!=config.aggr):
+        changes=True
+    if(smooth!=config.smooth):
+        changes=True
+    if(changes):
+        log(bot+"Changes found in config file")
+    apiID = config.apiID
+    apiKey = config.apiKey
+    aggr=config.aggr
+    smooth=config.smooth
+    return
 
 def avg(a):
     summ=0
