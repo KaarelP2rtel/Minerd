@@ -1,14 +1,18 @@
-from flask import Flask, render_template, request, Response
+from flask import Flask, Response
 import requests
 import threading
 import time
 from termcolor import colored
+import config
 
 app = Flask(__name__)
-file = open("conf", "r")
-apiID = file.readline()[:-1]
-apiKey = file.readline()[:-1]
-file.close()
+
+apiID = config.apiID
+apiKey = config.apiKey
+aggr=config.aggr
+smooth=config.smooth
+
+
 bot = colored("[BOT] ", "green")
 botr = colored("[BOT] ", "red")
 botl = "[BOT]"
@@ -16,6 +20,9 @@ api = colored("[API] ", "yellow")
 apir = colored("[API] ", "red")
 apil = "[API]"
 
+def reloadConf():
+    config = reload(config)
+    return
 
 class Data():
     orderID = ""
@@ -52,9 +59,9 @@ def targetPrice():
                 if order["alive"] and order["workers"] != 0:
                     prices.append(order["price"])
                     num += 1
-            target=float(prices[int(0.9*num)])
+            target=float(prices[int(((float(aggr)/100)*num)])
             data.slidingTarget.append(target)
-            if (len(data.slidingTarget) >= 60):
+            if (len(data.slidingzTarget) >= smooth):
                 data.slidingTarget.remove(data.slidingTarget[0])
             average=avg(data.slidingTarget)
             if target>average:
@@ -146,6 +153,8 @@ def connected():
 def main():
     while True:
         if connected():
+            reloadConf()
+            log(bot+"Reloading Configuration")
             speed=float(currentSpeed())*10000000
             target = rund(float(targetPrice()))
             current = float(currentPrice())
@@ -238,6 +247,7 @@ def page(page):
         except:
             pass
     ret += "</ul>"
+    ret+="<a href=\"/\">Esimene </a>"
     ret+="<a href=\"/"+str(page-1)+"\">Eelmine</a>"
     if(page!=last):
         ret+="<a href=\"/"+str(page+1)+"\"> Jargmine </a>"
