@@ -48,7 +48,7 @@ def targetPrice():
                 if order["alive"] and order["workers"] != 0:
                     prices.append(order["price"])
                     num += 1
-            target=float((float(config.aggr)/100)*num)
+            target=float(prices[int((float(config.aggr)/100)*num) ])
             data.slidingTarget.append(target)
             while (len(data.slidingTarget) >= config.smooth):
                 data.slidingTarget.remove(data.slidingTarget[0])
