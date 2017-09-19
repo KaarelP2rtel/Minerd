@@ -28,11 +28,6 @@ def log(a):
     data.history.append((str(time.strftime('%D  %H:%M:%S')+"   "+a[5:10]+" "+a[15:])))
 
 
-def reloadConf():
-    reload(config)
-    log(bot+"Config reloaded")
-    return
-
 def avg(a):
     summ=0
     count=0
@@ -55,11 +50,11 @@ def targetPrice():
                     num += 1
             target=float((float(config.aggr)/100)*num)
             data.slidingTarget.append(target)
-            if (len(data.slidingTarget) >= config.smooth):
+            while (len(data.slidingTarget) >= config.smooth):
                 data.slidingTarget.remove(data.slidingTarget[0])
             average=avg(data.slidingTarget)
             if target>average:
-                print(bot+"Price is rising, targeting average.")
+                log(bot+"Price is rising, targeting average.")
                 return average
             else:
                 return target
@@ -153,8 +148,8 @@ def connected():
 def main():
     while True:
         if connected():
-            reloadConf()
-            log(bot+"Reloading Configuration")
+            reload(config)
+            log(bot+"Config reloaded")
             speed=float(currentSpeed())*10000000
             target = rund(float(targetPrice()))
             current = float(currentPrice())
@@ -237,6 +232,7 @@ def page(page):
     else:
         ret += "Olen surnud D:"
     ret+="</br>"
+    ret+="<a href=\"/\">Esimene </a>"
     ret+="<a href=\"/"+str(page-1)+"\">Eelmine</a>"
     if(page!=last):
         ret+="<a href=\"/"+str(page+1)+"\"> Jargmine </a>"
@@ -252,7 +248,7 @@ def page(page):
     ret+="<a href=\"/"+str(page-1)+"\">Eelmine</a>"
     if(page!=last):
         ret+="<a href=\"/"+str(page+1)+"\"> Jargmine </a>"
-        ret+="<a href=\"/"+str(page+1)+"\">Viimane</a>"
+        ret+="<a href=\"/"+str(last)+"\">Viimane</a>"
     return ret
 
 
