@@ -207,7 +207,7 @@ def hello():
     ret+="</br>"
     if(page!=last):
         ret+="<a href=\"/1\"> Jargmine </a>"
-        ret+="<a href=\"/"+str(last)+"\">Viimane</a>"
+    ret+="<a href=\"/"+str(last)+"\">Viimane</a>"
     ret += "<ul>"
     for i in range(100):
         try:
@@ -217,7 +217,7 @@ def hello():
     ret += "</ul>"
     if(page!=last):
         ret+="<a href=\"/1\"> Jargmine </a>"
-        ret+="<a href=\"/"+str(last)+"\">Viimane</a>"
+    ret+="<a href=\"/"+str(last)+"\">Viimane</a>"
     
     
     return ret
@@ -236,7 +236,7 @@ def page(page):
     ret+="<a href=\"/"+str(page-1)+"\">Eelmine</a>"
     if(page!=last):
         ret+="<a href=\"/"+str(page+1)+"\"> Jargmine </a>"
-        ret+="<a href=\"/"+str(last)+"\">Viimane</a>"
+    ret+="<a href=\"/"+str(last)+"\">Viimane</a>"
     ret += "<ul>"
     for i in range(100):
         try:
@@ -248,7 +248,7 @@ def page(page):
     ret+="<a href=\"/"+str(page-1)+"\">Eelmine</a>"
     if(page!=last):
         ret+="<a href=\"/"+str(page+1)+"\"> Jargmine </a>"
-        ret+="<a href=\"/"+str(last)+"\">Viimane</a>"
+    ret+="<a href=\"/"+str(last)+"\">Viimane</a>"
     return ret
 
 
