@@ -72,7 +72,7 @@ def maxPrice():
                 priceData = api.json()
                 mHashR = float(priceData['coins']["Zcash"]["nethash"])/1000000
                 xRate = float(priceData['coins']["Zcash"]["exchange_rate"])
-                return(576*(1/mHashR)*10*xRate)
+                return(0.96*576*(1/mHashR)*10*xRate)
             except:
                 log(apir+"Failed to get Max Price. Trying again")
                 time.sleep(5)
@@ -155,7 +155,7 @@ def main():
             current = float(currentPrice())
             maxp = float(rund(maxPrice()))
             data.currentSum += speed*current
-            data.maximumSum += 0.96*speed*maxp
+            data.maximumSum += speed*maxp
             ratio = rund(data.currentSum/data.maximumSum)
             con = "Current: "+str(current)+" Target: "+str(target)+" Max: "+str(maxp)+" Speed "+str(speed)+" Ratio: "+str(ratio)
             log(bot+con)
